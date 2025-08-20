@@ -16,3 +16,24 @@ let attempts = 0;
 let gameStarted = false;
 let startTime = null;
 let timerInterval = null;
+
+const gameBoard = document.getElementById('gameBoard');
+const attemptsSpan = document.getElementById('attempts');
+const timeSpan = document.getElementById('time');
+const messageDiv = document.getElementById('message');
+const resetBtn = document.getElementById('resetBtn');
+
+function suffleArray(array) {
+    const shuffled = [...array];
+    for (let  i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+function createCardsArray() {
+    const pairs = [...imageUrls, ...imageUrls];
+    return shuffledArray(pairs);
+}
+
