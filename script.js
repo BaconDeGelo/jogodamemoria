@@ -78,3 +78,49 @@ function flipCard(card) {
     }
 }
 
+function checkMatch() {
+    const [card1, card2] = flippedCards;
+    // Compara se as imagens são iguais
+    if (card1.dataset.image === card2.dataset.image) {
+        matchSound.play()
+        card1.classList.add('matched');
+        card2.classList.add('matched');
+        matchedPairs++;
+        matchedPairsSpan.textContent = matchedPairs;
+        // Faz as cartas "sumirem" visualmente após um pequeno atraso
+        setTimeout(() => {
+            card1.style.opacity = '0';
+            card2.style.opacity = '0';
+            card1.style.pointerEvents = 'none';
+            card2.style.pointerEvents = 'none';
+        }, 500); // Sumir 0.5 segundos após o match
+
+        // Verifica se o jogo terminou (todos os 8 pares encontrados)
+        if (matchedPairs === 8) {
+            endGame()
+        }
+    } else {
+        noMatchSound.play();
+        // São diferente, vira as cartas de volta
+        card1.classList.remove('flipped');
+        card2.classList.remove('flipped');
+    }
+    // Limpa a lista de cartas viradas
+    flippedCards = [];
+}
+
+function startGame() {
+    gameStarted = true;
+    startTime = Date.now();
+    // Atualiza o timer a cada segundo
+    timerInterval = setInterval(updateTimer, 1000);
+}
+
+function updateTimer() {
+    const currentTime = Date.now();
+    const elapsedTime = Math.floor((currentTime - startTime) / 1000);
+    const minutes = Math.floor(elapsedTime / 60);
+    const seconds = elapsedTime % 60;
+    const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    timeSpan.textContent = formattedTime;
+}
