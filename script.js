@@ -18,11 +18,15 @@ let startTime = null;
 let timerInterval = null;
 
 const clickSound = new Audio('Sounds/carta-virando.mp3');
+const matchedSound = new Audio('Sounds/carta-igual.mp3');
+const noMatchSound = new Audio('Sounds/carta-errada.mp3');
+const winSound = new Audio('Sounds/venceu.mp3');
 
 const gameBoard = document.getElementById('gameBoard');
 const attemptsSpan = document.getElementById('attempts');
 const timeSpan = document.getElementById('time');
 const messageDiv = document.getElementById('message');
+const matchedPairsSpan = document.getElementById('matchedPairs');
 const resetBtn = document.getElementById('resetBtn');
 
 function shuffleArray(array) {
@@ -52,7 +56,7 @@ function createCardElement(imageUrl, index) {
         </div>
     `;
 
-    card.addEventListener('click', () => flippedCards(card));
+    card.addEventListener('click', () => flipCard(card));
     return card;
 }
 
@@ -82,11 +86,11 @@ function checkMatch() {
     const [card1, card2] = flippedCards;
     // Compara se as imagens são iguais
     if (card1.dataset.image === card2.dataset.image) {
-        matchSound.play()
+        matchedSound.play()
         card1.classList.add('matched');
         card2.classList.add('matched');
-        matchedPairs++;
-        matchedPairsSpan.textContent = matchedPairs;
+        marchedPairs++;
+        matchedPairsSpan.textContent = marchedPairs;
         // Faz as cartas "sumirem" visualmente após um pequeno atraso
         setTimeout(() => {
             card1.style.opacity = '0';
@@ -96,7 +100,7 @@ function checkMatch() {
         }, 500); // Sumir 0.5 segundos após o match
 
         // Verifica se o jogo terminou (todos os 8 pares encontrados)
-        if (matchedPairs === 8) {
+        if (marchedPairs === 8) {
             endGame()
         }
     } else {
@@ -124,3 +128,45 @@ function updateTimer() {
     const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     timeSpan.textContent = formattedTime;
 }
+
+function endGame() {
+    clearInterval(timerInterval);
+    winSound.currentTime = 0;
+    winSound.play();
+    messageDiv.textContent= `🎉 Parabéns! Você ganhou em ${attempts} tentativas e encontrou todos os ${marchedPairs} pares!`;
+    messageDiv.classList.add('win-message');
+    messageDiv.classList.add('show');
+}
+
+
+function resetGame() {
+    cards = [];
+    flippedCards = [];
+    marchedPairs = 0;
+    attempts = 0;
+    gameStarted = false;
+    startTime = null;
+    if (timerInterval) {
+        clearInterval(timerInterval);
+
+    }
+    attemptsSpan.textContent = '0';
+    timeSpan.textContent = '00:00';
+    matchedPairsSpan.textContent = '0';
+    messageDiv.textContent = '';
+    messageDiv.className = 'message';
+    initGame();
+}
+
+function initGame() {
+    gameBoard.innerHTML = '';
+    cards = createCardsArray();
+    cards.forEach((ImageUrl, index) => {
+        const cardElement = createCardElement(ImageUrl, index);
+        gameBoard.appendChild(cardElement);
+    });
+}
+
+resetBtn.addEventListener('click', resetGame);
+
+initGame();
